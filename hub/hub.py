@@ -38,7 +38,8 @@ class Hub(BaseClient):
 
         Returns a dict that includes a list of repositories,
         the count of query, the url of next page, and the url of
-        previous page.For example:
+        previous page.
+        For example:
         {
             "count": 18497,
             "next": "https://hub.docker.com/v2/search/repositories/?query=nginx&page=2&page_size=2",
@@ -145,5 +146,54 @@ class Hub(BaseClient):
         result.raise_for_status()
         return result.json()
 
+    def tag(self, repo, token=None):
+        '''
+        :param repo: The name of repository that include namespace and image's name.
+        :type repo: str
+        :param token: The access token of user.It is optional.Token is required
+        if you want to list tags of private repository.
+        :type token: str
+        :rtype: dict
+        Returns a dict that includes a list of tags,
+        the count of query, the url of next page, and the url of
+        previous page.
+        For Example:
+        {
+           "count":1,
+           "next":null,
+           "previous":null,
+           "results":[
+              {
+                 "name":"gzip",
+                 "full_size":44809657,
+                 "images":[
+                    {
+                       "size":44809657,
+                       "architecture":"amd64",
+                       "variant":null,
+                       "features":null,
+                       "os":"linux",
+                       "os_version":null,
+                       "os_features":null
+                    }
+                 ],
+                 "id":11691555,
+                 "repository":1556265,
+                 "creator":1516346,
+                 "last_updater":1516346,
+                 "last_updated":"2017-06-08T14:28:29.762439Z",
+                 "image_id":null,
+                 "v2":true
+              }
+           ]
+        }
+        '''
+        path = '/v2/repositories/{}/tags/'.format(repo)
+        headers = token or {}
+        result = self.get(path, headers=headers)
+        result.raise_for_status()
+        return result.json()
+
     
+
 
