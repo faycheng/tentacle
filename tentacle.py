@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import os
+import sys
 import json
 import click
 from terminaltables import GithubFlavoredMarkdownTable as Table
@@ -10,6 +11,21 @@ CONFIG_PATH = os.path.expanduser('~') + '/'
 CONFIG_NAME = '.tentacle.json'
 CONFIG = CONFIG_PATH + CONFIG_NAME
 CTX = {}
+
+
+DEFAULT_CONFIG = {
+    'auth': {
+        'username': None,
+        'password': None,
+        'token': None
+    },
+    'table':{
+        'search': {
+            'filters': ['repo_owner', 'short_description'],
+            'locations': ['repo_name', 'pull_count']
+        }
+    }
+}
 
 
 def pretty_table(data, filters=None, locations=None):
@@ -48,18 +64,10 @@ def cli():
     global CTX
     if not os.path.exists(CONFIG):
         with open(CONFIG, 'w') as fd:
-            json.dump({
-                'auth': {
-                    'username': None,
-                    'password': None,
-                    'token': None
-                }
-            }, fd, indent=4)
+            json.dump(DEFAULT_CONFIG, fd, indent=4)
     with open(CONFIG, 'r') as fd:
         config = json.load(fd)
-    CTX['username'] = config['auth']['username']
-    CTX['password'] = config['auth']['password']
-    CTX['token'] = config['auth']['token']
+    CTX['config'] = config
 
 
 @cli.command()
@@ -83,13 +91,16 @@ def login():
 @cli.command()
 @click.argument('query', type=str)
 def search(query):
-    res = Hub().search(CTX['token'], query)
+    if CTX['config']['auth']['token'] is None:
+        click.echo('Please login with username and password: tentacle login')
+        sys.exit(1)
+    res = Hub().search(CTX['config']['auth']['token'], query)
     click.echo('Count:{}'.format(res['count']))
     click.echo(
         pretty_table(
             res['results'],
-            filters=['repo_owner', 'short_description'],
-            locations=['repo_name', 'pull_count']))
+            filters=CTX['config']['table']['search']['filters'],
+            locations=CTX['config']['table']['search']['locations']))
 
 
 if __name__ == '__main__':
