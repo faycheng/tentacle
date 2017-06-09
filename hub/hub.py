@@ -28,7 +28,7 @@ class Hub(BaseClient):
 
     def search(self, token, query, page=1, page_size=15):
         '''
-        :param query: A keyword for querying repositories
+        :param query: The keyword for querying repositories
         :type query: str
         :param token: The access token of user.It is required.
         :type token: str
@@ -36,7 +36,7 @@ class Hub(BaseClient):
         :type page: The number of records that will be displayed on every page.
         :rtype: dict
 
-        Return a dict that includes a list of repositories,
+        Returns a dict that includes a list of repositories,
         the count of query, the url of next page, and the url of
         previous page.For example:
         {
@@ -75,5 +75,46 @@ class Hub(BaseClient):
         result.raise_for_status()
         return result.json()
 
+    def show(self, repo, token=None):
+        '''
+        :param repo: The name of repository that include namespace and image's name.
+        :type repo: str
+        :param token: The access token of user.It is required.
+        :type token: str
+        :rtype: dict
+        Returns a dict that includes detailed information of repository.The information
+        includes the repository name, the repository type, the repository description,
+        the repository permissions, and so on.
+        For Example:
+        {
+            "user": "faycheng",
+            "name": "nginx",
+            "namespace": "faycheng",
+            "repository_type": "image",
+            "status": 1,
+            "description": "",
+            "is_private": false,
+            "is_automated": false,
+            "can_edit": false,
+            "star_count": 0,
+            "pull_count": 1,
+            "last_updated": "2017-06-08T14:28:30.286399Z",
+            "build_on_cloud": null,
+            "has_starred": false,
+            "full_description": "Dockerfile:\n\nFROM nginx\nMAINTAINER FayCheng <fay.cheng.cn@gmail.com>\n\nENV MYSQL_ROOT_PASSWORD dangerous\nCOPY ./nginx.conf /etc/nginx/nginx.conf\nRUN ln -s /usr/share/nginx/html /html\nWORKDIR /usr/share/nginx/html\n\nUsage:\ndocker run -v ./html:/html -d faycheng/nginx:gzip",
+            "affiliation": null,
+            "permissions": {
+                "read": true,
+                "write": false,
+                "admin": false
+                }
+        }
+        '''
+        path = '/v2/repositories/{}/'.format(repo)
+        headers = token or {}
+        result = self.get(path, headers=headers)
+        result.raise_for_status()
+        return result.json()
 
+    
 
