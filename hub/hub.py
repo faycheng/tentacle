@@ -65,13 +65,16 @@ class Hub(BaseClient):
             ]
         }
         '''
+        headers = {
+            'Authorization': "JWT {}".format(token)
+        }
         path = '/v2/search/repositories/'
         params = {
             'query': query,
             'page': page,
             'page_size': page_size
         }
-        result = self.get(path, params=params)
+        result = self.get(path, params=params, headers=headers)
         result.raise_for_status()
         return result.json()
 
@@ -116,5 +119,4 @@ class Hub(BaseClient):
         result.raise_for_status()
         return result.json()
 
-    
 
