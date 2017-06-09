@@ -87,9 +87,9 @@ def search(query):
     click.echo('Count:{}'.format(res['count']))
     click.echo(
         pretty_table(
-            res['results'], filters=[
-                'repo_owner', 'short_description'], locations=[
-                'repo_name', 'pull_count']))
+            res['results'],
+            filters=['repo_owner', 'short_description'],
+            locations=['repo_name', 'pull_count']))
 
 
 if __name__ == '__main__':
