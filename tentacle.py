@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import copy
 import click
 from terminaltables import GithubFlavoredMarkdownTable as Table
 from hub.hub import Hub
@@ -19,7 +20,7 @@ DEFAULT_CONFIG = {
         'password': None,
         'token': None
     },
-    'table':{
+    'table': {
         'search': {
             'filters': ['repo_owner', 'short_description'],
             'locations': ['repo_name', 'pull_count']
@@ -85,7 +86,32 @@ def login():
         }
         fd.seek(0)
         json.dump(config, fd, indent=4)
-    click.echo('Login Success')
+    click.echo('Login success')
+
+
+@cli.command()
+@click.option(
+    '--remain_auth',
+    type=bool,
+    default=False,
+    help='Remain the detailed information of authorization if this arguments is true.Default '
+    'argument value is false.')
+def reset(remain_auth):
+    assert os.path.exists(CONFIG)
+    click.echo('Remain Auth:{}'.format(remain_auth))
+    if remain_auth is False:
+        os.remove(CONFIG)
+        with open(CONFIG, 'w') as fd:
+            json.dump(DEFAULT_CONFIG, fd, indent=4)
+        click.echo('Reset config success')
+        sys.exit(0)
+    with open(CONFIG, 'r+') as fd:
+        config = json.load(fd)
+        default_config = copy.deepcopy(DEFAULT_CONFIG)
+        default_config['auth'] = config['auth']
+        fd.seek(0)
+        json.dump(default_config, fd, indent=4)
+    click.echo('Reset config success')
 
 
 @cli.command()
