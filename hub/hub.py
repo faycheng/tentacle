@@ -194,6 +194,4 @@ class Hub(BaseClient):
         result.raise_for_status()
         return result.json()
 
-    
-
 
