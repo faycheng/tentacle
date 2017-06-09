@@ -12,14 +12,23 @@ CONFIG = CONFIG_PATH + CONFIG_NAME
 CTX = {}
 
 
-def pretty_table(data, filter=None):
+def pretty_table(data, filters=None, locations=None):
     headers = []
     for item in data:
         keys = list(item.keys())
         headers = list(set(headers + keys))
-    if filter is not None:
-        assert isinstance(filter, list)
-        headers = [header for header in headers if header not in filter]
+    if filters is not None:
+        assert isinstance(filters, list)
+        headers = [header for header in headers if header not in filters]
+    if locations is not None:
+        assert isinstance(locations, list)
+        valid_locations = [
+            location for location in locations if location in headers]
+        headers_with_location = valid_locations
+        headers_with_location.extend(
+            [header for header in headers if header not in valid_locations])
+        headers = headers_with_location
+
     rows = []
     for item in data:
         assert isinstance(item, dict)
@@ -76,7 +85,11 @@ def login():
 def search(query):
     res = Hub().search(CTX['token'], query)
     click.echo('Count:{}'.format(res['count']))
-    click.echo(pretty_table(res['results'], filter=['repo_owner', 'short_description']))
+    click.echo(
+        pretty_table(
+            res['results'], filters=[
+                'repo_owner', 'short_description'], locations=[
+                'repo_name', 'pull_count']))
 
 
 if __name__ == '__main__':
