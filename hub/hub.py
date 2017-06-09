@@ -82,7 +82,8 @@ class Hub(BaseClient):
         '''
         :param repo: The name of repository that include namespace and image's name.
         :type repo: str
-        :param token: The access token of user.It is required.
+        :param token: The access token of user.It is optional.Token is required
+        if you want to show detailed information of private repository.
         :type token: str
         :rtype: dict
         Returns a dict that includes detailed information of repository.The information
@@ -119,4 +120,30 @@ class Hub(BaseClient):
         result.raise_for_status()
         return result.json()
 
+    def list(self, username, token=None):
+        '''
+        :param username: The name of user on docker hub.
+        :type username: str
+        :param token: The access token of user.It is optional.Token is required if you
+        want to list all repositories that incloud private repositories and public repositories.
+        :type token: str
+        :rtype: list[dict]
+        Returns a list of repositories on the docker hub.
+        For example:
+        [
+            {
+                "namespace": "faycheng", "name": "nginx"
+            },
+            {
+                "namespace": "faycheng", "name": "mysql"
+            }
+        ]
+        '''
+        path = '/v2/users/{}/repositories/'.format(username)
+        headers = token or {}
+        result = self.get(path, headers=headers)
+        result.raise_for_status()
+        return result.json()
+
+    
 
