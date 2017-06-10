@@ -42,7 +42,12 @@ DEFAULT_CONFIG = {
 }
 
 
-def pretty_table(data, filters=None, locations=None, sort_keys=None, sort_reverse=False):
+def pretty_table(
+        data,
+        filters=None,
+        locations=None,
+        sort_keys=None,
+        sort_reverse=False):
     headers = []
     for item in data:
         keys = list(item.keys())
@@ -150,23 +155,6 @@ def search(query):
     )
 
 
-
-@cli.command()
-@click.argument('repo', type=str)
-def tag(repo):
-    res = Hub().tag(repo, CTX['config']['auth']['token'])
-    click.echo('Count:{}'.format(res['count']))
-    click.echo(
-        pretty_table(
-            res['results'],
-            filters=CTX['config']['table']['tag']['filters'],
-            locations=CTX['config']['table']['tag']['locations'],
-            sort_keys=CTX['config']['table']['tag']['sort']['keys'],
-            sort_reverse=CTX['config']['table']['tag']['sort']['reverse'],
-        ),
-    )
-
-
 @cli.command()
 @click.argument('query', type=str)
 def search(query):
@@ -186,7 +174,20 @@ def search(query):
     )
 
 
-
+@cli.command()
+@click.argument('repo', type=str)
+def tag(repo):
+    res = Hub().tag(repo, CTX['config']['auth']['token'])
+    click.echo('Count:{}'.format(res['count']))
+    click.echo(
+        pretty_table(
+            res['results'],
+            filters=CTX['config']['table']['tag']['filters'],
+            locations=CTX['config']['table']['tag']['locations'],
+            sort_keys=CTX['config']['table']['tag']['sort']['keys'],
+            sort_reverse=CTX['config']['table']['tag']['sort']['reverse'],
+        ),
+    )
 
 
 if __name__ == '__main__':
