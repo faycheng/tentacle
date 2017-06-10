@@ -29,7 +29,15 @@ DEFAULT_CONFIG = {
                 'keys': ['pull_count', 'star_count'],
                 'reverse': True
             }
-        }
+        },
+        'tag': {
+            'filters': ['images', 'creator', 'repository', 'last_updater', 'image_id'],
+            'locations': ['name', 'id', 'full_size', 'v2', 'last_updated'],
+            'sort': {
+                'keys': ['name'],
+                'reverse': True
+            }
+        },
     }
 }
 
@@ -140,6 +148,45 @@ def search(query):
             sort_reverse=CTX['config']['table']['search']['sort']['reverse'],
         ),
     )
+
+
+
+@cli.command()
+@click.argument('repo', type=str)
+def tag(repo):
+    res = Hub().tag(repo, CTX['config']['auth']['token'])
+    click.echo('Count:{}'.format(res['count']))
+    click.echo(
+        pretty_table(
+            res['results'],
+            filters=CTX['config']['table']['tag']['filters'],
+            locations=CTX['config']['table']['tag']['locations'],
+            sort_keys=CTX['config']['table']['tag']['sort']['keys'],
+            sort_reverse=CTX['config']['table']['tag']['sort']['reverse'],
+        ),
+    )
+
+
+@cli.command()
+@click.argument('query', type=str)
+def search(query):
+    if CTX['config']['auth']['token'] is None:
+        click.echo('Please login with username and password: tentacle login')
+        sys.exit(1)
+    res = Hub().search(CTX['config']['auth']['token'], query)
+    click.echo('Count:{}'.format(res['count']))
+    click.echo(
+        pretty_table(
+            res['results'],
+            filters=CTX['config']['table']['search']['filters'],
+            locations=CTX['config']['table']['search']['locations'],
+            sort_keys=CTX['config']['table']['search']['sort']['keys'],
+            sort_reverse=CTX['config']['table']['search']['sort']['reverse'],
+        ),
+    )
+
+
+
 
 
 if __name__ == '__main__':
