@@ -205,8 +205,13 @@ def show(repo):
     click.echo('Pull Count: {}'.format(res['pull_count']))
     click.echo('Last Updated: {}'.format(res['last_updated']))
     click.echo('Permissions: {}'.format(res['permissions']))
-    click.echo('Description: {}'.format(res['description']))
-    click.echo('Full Description: \n{}'.format(res['full_description']))
+    if res['description']:
+        click.echo('Description: {}'.format(res['description']))
+    if res['full_description']:
+        click.echo('Full Description: \n{}'.format(res['full_description']))
+
+
+
 
 
 if __name__ == '__main__':
