@@ -136,7 +136,7 @@ def login():
     help='Remain the detailed information of authorization if this arguments is true. The default '
     'is false.')
 def reset(remain_auth):
-    ''''Reset config'''
+    '''Reset config'''
     assert os.path.exists(CONFIG)
     click.echo('Remain Auth:{}'.format(remain_auth))
     if remain_auth is False:
