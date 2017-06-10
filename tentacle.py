@@ -190,5 +190,24 @@ def tag(repo):
     )
 
 
+@cli.command()
+@click.argument('repo', type=str)
+def show(repo):
+    res = Hub().show(repo, CTX['config']['auth']['token'])
+    click.echo('Name: {}'.format(res['name']))
+    click.echo('Starred: {}'.format(res['has_starred']))
+    click.echo('User: {}'.format(res['user']))
+    click.echo('Namespace: {}'.format(res['namespace']))
+    click.echo('Repository Type: {}'.format(res['repository_type']))
+    click.echo('Private: {}'.format(res['is_private']))
+    click.echo('Automated: {}'.format(res['is_automated']))
+    click.echo('Star Count: {}'.format(res['star_count']))
+    click.echo('Pull Count: {}'.format(res['pull_count']))
+    click.echo('Last Updated: {}'.format(res['last_updated']))
+    click.echo('Permissions: {}'.format(res['permissions']))
+    click.echo('Description: {}'.format(res['description']))
+    click.echo('Full Description: \n{}'.format(res['full_description']))
+
+
 if __name__ == '__main__':
     cli()
