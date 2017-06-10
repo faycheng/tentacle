@@ -116,7 +116,7 @@ class Hub(BaseClient):
         }
         '''
         path = '/v2/repositories/{}/'.format(repo)
-        headers = token or {}
+        headers = {'Authorization': token} if token is not None else {}
         result = self.get(path, headers=headers)
         result.raise_for_status()
         return result.json()
@@ -141,7 +141,7 @@ class Hub(BaseClient):
         ]
         '''
         path = '/v2/users/{}/repositories/'.format(username)
-        headers = token or {}
+        headers = {'Authorization': "JWT {}".format(token)} if token is not None else {}
         result = self.get(path, headers=headers)
         result.raise_for_status()
         return result.json()
@@ -189,7 +189,7 @@ class Hub(BaseClient):
         }
         '''
         path = '/v2/repositories/{}/tags/'.format(repo)
-        headers = token or {}
+        headers = {'Authorization': "JWT {}".format(token)} if token is not None else {}
         result = self.get(path, headers=headers)
         result.raise_for_status()
         return result.json()
