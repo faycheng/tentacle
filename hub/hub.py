@@ -151,7 +151,7 @@ class Hub(BaseClient):
         :param username: The name of user on docker hub.
         :type username: str
         :param token: The access token of user.It is optional.Token is required if you
-        want to list all repositories that incloud private repositories and public repositories.
+        want to list all starred repositories that incloud private repositories and public repositories.
         :type token: str
         :rtype: dict
         Returns a dict that includes detailed information of starred repository.The information
@@ -187,10 +187,22 @@ class Hub(BaseClient):
         result.raise_for_status()
         return result.json()
 
-    def star(self):
-        pass
+    def star(self, repo, token):
+        '''
+        :param repo: The name of repository that include namespace and image's name.
+        :type repo: str
+        :param token: The access token of user.It is required.
+        :type token: str
+        :rtype: None
 
-    def unstart(self):
+        Returns None.
+        '''
+        path = '/v2/repositories/{}/stars/'.format(repo)
+        headers = {'Authorization': "JWT {}".format(token)}
+        result = self.post(path, headers=headers)
+        result.raise_for_status()
+
+    def unstar(self):
         pass
 
     def tag(self, repo, token=None):
