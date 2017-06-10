@@ -202,8 +202,20 @@ class Hub(BaseClient):
         result = self.post(path, headers=headers)
         result.raise_for_status()
 
-    def unstar(self):
-        pass
+    def unstar(self, repo, token):
+        '''
+        :param repo: The name of repository that include namespace and image's name.
+        :type repo: str
+        :param token: The access token of user.It is required.
+        :type token: str
+        :rtype: None
+
+        Returns None.
+        '''
+        path = '/v2/repositories/{}/stars/'.format(repo)
+        headers = {'Authorization': "JWT {}".format(token)}
+        result = self.delete(path, headers=headers)
+        result.raise_for_status()
 
     def tag(self, repo, token=None):
         '''
