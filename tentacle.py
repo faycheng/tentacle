@@ -5,6 +5,7 @@ import sys
 import json
 import copy
 import click
+from operator import itemgetter
 from terminaltables import GithubFlavoredMarkdownTable as Table
 from hub.hub import Hub
 
@@ -23,13 +24,17 @@ DEFAULT_CONFIG = {
     'table': {
         'search': {
             'filters': ['repo_owner', 'short_description'],
-            'locations': ['repo_name', 'pull_count']
+            'locations': ['repo_name', 'pull_count'],
+            'sort': {
+                'keys': ['pull_count', 'star_count'],
+                'reverse': True
+            }
         }
     }
 }
 
 
-def pretty_table(data, filters=None, locations=None):
+def pretty_table(data, filters=None, locations=None, sort_keys=None, sort_reverse=False):
     headers = []
     for item in data:
         keys = list(item.keys())
@@ -53,6 +58,10 @@ def pretty_table(data, filters=None, locations=None):
         for header in headers:
             row.append(item.get(header, ''))
         rows.append(row)
+    if sort_keys is not None:
+        assert isinstance(sort_keys, list)
+        indexs = [headers.index(key) for key in sort_keys if key in headers]
+        rows.sort(key=itemgetter(*indexs), reverse=sort_reverse)
     table_data = list()
     table_data.append(headers)
     table_data.extend(rows)
@@ -126,7 +135,11 @@ def search(query):
         pretty_table(
             res['results'],
             filters=CTX['config']['table']['search']['filters'],
-            locations=CTX['config']['table']['search']['locations']))
+            locations=CTX['config']['table']['search']['locations'],
+            sort_keys=CTX['config']['table']['search']['sort']['keys'],
+            sort_reverse=CTX['config']['table']['search']['sort']['reverse'],
+        ),
+    )
 
 
 if __name__ == '__main__':
