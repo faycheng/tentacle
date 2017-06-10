@@ -121,7 +121,7 @@ class Hub(BaseClient):
         result.raise_for_status()
         return result.json()
 
-    def list(self, username, token=None):
+    def list_repos(self, username, token=None):
         '''
         :param username: The name of user on docker hub.
         :type username: str
@@ -145,6 +145,53 @@ class Hub(BaseClient):
         result = self.get(path, headers=headers)
         result.raise_for_status()
         return result.json()
+
+    def list_starred_repos(self, username, token=None):
+        '''
+        :param username: The name of user on docker hub.
+        :type username: str
+        :param token: The access token of user.It is optional.Token is required if you
+        want to list all repositories that incloud private repositories and public repositories.
+        :type token: str
+        :rtype: dict
+        Returns a dict that includes detailed information of starred repository.The information
+        includes the repository name, the repository type, the repository description,
+        the repository permissions, and so on.
+        For example:
+        {
+            "count": 1,
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "user": "faycheng",
+                    "name": "py3",
+                    "namespace": "faycheng",
+                    "repository_type": "image",
+                    "status": 1,
+                    "description": "",
+                    "is_private": false,
+                    "is_automated": false,
+                    "can_edit": false,
+                    "star_count": 1,
+                    "pull_count": 34,
+                    "last_updated": "2017-06-01T15:46:10.702646Z",
+                    "build_on_cloud": null
+                }
+            ]
+        }
+        '''
+        path = '/v2/users/{}/repositories/starred/'.format(username)
+        headers = {'Authorization': "JWT {}".format(token)} if token is not None else {}
+        result = self.get(path, headers=headers)
+        result.raise_for_status()
+        return result.json()
+
+    def star(self):
+        pass
+
+    def unstart(self):
+        pass
 
     def tag(self, repo, token=None):
         '''
