@@ -111,6 +111,7 @@ def cli():
 
 @cli.command()
 def login():
+    '''Use username and password to obtain an access token'''
     username = click.prompt('Username', type=str)
     password = click.prompt('Password', type=str)
     token = Hub().login(username, password)['token']
@@ -135,6 +136,7 @@ def login():
     help='Remain the detailed information of authorization if this arguments is true. The default '
     'is false.')
 def reset(remain_auth):
+    ''''Reset config'''
     assert os.path.exists(CONFIG)
     click.echo('Remain Auth:{}'.format(remain_auth))
     if remain_auth is False:
@@ -155,25 +157,7 @@ def reset(remain_auth):
 @cli.command()
 @click.argument('query', type=str)
 def search(query):
-    if CTX['config']['auth']['token'] is None:
-        click.echo('Please login with username and password: tentacle login')
-        sys.exit(1)
-    res = Hub().search(CTX['config']['auth']['token'], query)
-    click.echo('Count:{}'.format(res['count']))
-    click.echo(
-        pretty_table(
-            res['results'],
-            filters=CTX['config']['table']['search']['filters'],
-            locations=CTX['config']['table']['search']['locations'],
-            sort_keys=CTX['config']['table']['search']['sort']['keys'],
-            sort_reverse=CTX['config']['table']['search']['sort']['reverse'],
-        ),
-    )
-
-
-@cli.command()
-@click.argument('query', type=str)
-def search(query):
+    '''Search for repositories from Docker Hub by key word'''
     if CTX['config']['auth']['token'] is None:
         click.echo('Please login with username and password: tentacle login')
         sys.exit(1)
@@ -193,6 +177,7 @@ def search(query):
 @cli.command()
 @click.argument('repo', type=str)
 def tag(repo):
+    '''List tags of repository'''
     res = Hub().tag(repo, CTX['config']['auth']['token'])
     click.echo('Count:{}'.format(res['count']))
     click.echo(
