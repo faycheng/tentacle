@@ -38,9 +38,16 @@ DEFAULT_CONFIG = {
                 'reverse': True
             }
         },
+        'star': {
+            'filters': ['status', 'user', 'repository_type', 'description', 'can_edit', 'build_on_cloud'],
+            'locations': ['name', 'namespace', 'is_private', 'is_automated', 'star_count', 'pull_count', 'last_updated'],
+            'sort': {
+                'keys': ['pull_count'],
+                'reverse': True
+            }
+        },
     }
 }
-
 
 def pretty_table(
         data,
@@ -193,6 +200,7 @@ def tag(repo):
 @cli.command()
 @click.argument('repo', type=str)
 def show(repo):
+    '''Show detailed information of repository'''
     res = Hub().show(repo, CTX['config']['auth']['token'])
     click.echo('Name: {}'.format(res['name']))
     click.echo('Starred: {}'.format(res['has_starred']))
@@ -211,7 +219,40 @@ def show(repo):
         click.echo('Full Description: \n{}'.format(res['full_description']))
 
 
+@cli.command()
+@click.option('--list', '-l', is_flag=True)
+@click.option('--delete', '-d', is_flag=True)
+@click.option('--repo', type=str)
+def star(list, delete, repo):
+    '''List, star, or unstar repositories'''
+    if CTX['config']['auth']['token'] is None or CTX['config']['auth']['username'] is None:
+        click.echo('Please login with username and password: tentacle login')
+        sys.exit(1)
+    if list is True:
 
+
+        res = Hub().list_starred_repos(CTX['config']['auth']['username'],
+                                       CTX['config']['auth']['token'])
+        click.echo('Count:{}'.format(res['count']))
+        click.echo(
+            pretty_table(
+                res['results'],
+                filters=CTX['config']['table']['star']['filters'],
+                locations=CTX['config']['table']['star']['locations'],
+                sort_keys=CTX['config']['table']['star']['sort']['keys'],
+                sort_reverse=CTX['config']['table']['star']['sort']['reverse'],
+            ),
+        )
+        sys.exit(0)
+    if not repo:
+        click.echo("Please enter the repo argument")
+        sys.exit(1)
+    if delete is True:
+        Hub().unstar(repo, CTX['config']['auth']['token'])
+        click.echo('UnStar {} success'.format(repo))
+        sys.exit(0)
+    Hub().star(repo, CTX['config']['auth']['token'])
+    click.echo('Star {} success'.format(repo))
 
 
 if __name__ == '__main__':
