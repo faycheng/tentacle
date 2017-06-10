@@ -46,8 +46,17 @@ DEFAULT_CONFIG = {
                 'reverse': True
             }
         },
+        'repo': {
+            'filters': None,
+            'locations': ['namespace', 'name'],
+            'sort': {
+                'keys': None,
+                'reverse': False
+            }
+        },
     }
 }
+
 
 def pretty_table(
         data,
@@ -229,8 +238,6 @@ def star(list, delete, repo):
         click.echo('Please login with username and password: tentacle login')
         sys.exit(1)
     if list is True:
-
-
         res = Hub().list_starred_repos(CTX['config']['auth']['username'],
                                        CTX['config']['auth']['token'])
         click.echo('Count:{}'.format(res['count']))
@@ -253,6 +260,25 @@ def star(list, delete, repo):
         sys.exit(0)
     Hub().star(repo, CTX['config']['auth']['token'])
     click.echo('Star {} success'.format(repo))
+
+
+@cli.command()
+def repo():
+    '''List repositories'''
+    if CTX['config']['auth']['token'] is None or CTX['config']['auth']['username'] is None:
+        click.echo('Please login with username and password: tentacle login')
+        sys.exit(1)
+    res = Hub().list_repos(CTX['config']['auth']['username'],
+                           CTX['config']['auth']['token'])
+    click.echo(
+        pretty_table(
+            res,
+            filters=CTX['config']['table']['repo']['filters'],
+            locations=CTX['config']['table']['repo']['locations'],
+            sort_keys=CTX['config']['table']['repo']['sort']['keys'],
+            sort_reverse=CTX['config']['table']['repo']['sort']['reverse'],
+        ),
+    )
 
 
 if __name__ == '__main__':
